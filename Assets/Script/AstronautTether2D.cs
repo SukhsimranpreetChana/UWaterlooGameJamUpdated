@@ -154,19 +154,22 @@ public sealed class AstronautTether2D : MonoBehaviour
             SimulateRope(Time.fixedDeltaTime);
     }
 
-    // A whisper of inward pull, scaled by separation. Keeps the pair cohesive
-    // without ever fighting the joint's max-distance enforcement.
+    // A whisper of inward pull, but only past 70% of max length.
+    // Below that, the rope is truly slack - no drift at spawn.
     private void ApplyTension()
     {
         Vector2 delta = otherAstronaut.position - body.position;
         float distance = delta.magnitude;
-        if (distance < 0.001f)
+        float tensionStart = maximumLength * 0.7f;
+        if (distance <= tensionStart)
             return;
 
-        Vector2 force = (delta / distance) * (distance * tensionStiffness);
+        float pull = distance - tensionStart;
+        Vector2 force = (delta / distance) * (pull * tensionStiffness);
         body.AddForce(force);
         otherAstronaut.AddForce(-force);
     }
+
 
     private void LateUpdate()
     {
