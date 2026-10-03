@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 // Unity 6 + Input System. Attach once to EACH player's physics root.
 // The root's local +Y axis is forward. Put graphics and animation on children.
+// W = normal thrust. S = FART BOOST (bigger thrust, bigger puffs).
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D))]
 public sealed class AstronautMovement2D : MonoBehaviour
@@ -11,12 +12,21 @@ public sealed class AstronautMovement2D : MonoBehaviour
     [SerializeField] private Key rotateLeftKey = Key.A;
     [SerializeField] private Key rotateRightKey = Key.D;
     [SerializeField] private Key boostKey = Key.W;
+    [SerializeField] private Key fartBoostKey = Key.S;
 
     [Header("Jetpack")]
     [SerializeField, Min(0.01f)] private float thrustAcceleration = 8f;
     [SerializeField, Min(0.01f)] private float maximumSpeed = 6f;
     [SerializeField, Min(0f)] private float thrustRiseTime = 0.18f;
     [SerializeField, Min(0f)] private float thrustFallTime = 0.10f;
+
+    [Header("Fart boost")]
+    [SerializeField, Min(1f)] private float fartBoostMultiplier = 2.2f;
+
+    [Header("Fuel")]
+    [SerializeField, Min(1f)] private float maxFuel = 100f;
+    [SerializeField, Min(0f)] private float fuelBurnRate = 6f;
+    [SerializeField, Min(1f)] private float fartBoostBurnMultiplier = 3f;
 
     [Header("Rotation")]
     [SerializeField, Min(0.01f)] private float turnSpeed = 240f;
@@ -34,10 +44,13 @@ public sealed class AstronautMovement2D : MonoBehaviour
     private float currentTurnSpeed;
 
     // Read these from animation / particles / audio scripts later.
-    public float ThrustAmount { get; private set; } // 0..1, includes ramp-down.
+    public float ThrustAmount { get; private set; } // 0..fartBoostMultiplier, includes ramp-down.
     public float TurnInput { get; private set; }    // +1 left, -1 right.
     public bool BoostHeld { get; private set; }
+    public bool FartBoostHeld { get; private set; }
     public bool IsThrusting => ThrustAmount > 0.001f;
+    public float Fuel { get; private set; }
+    public float FuelFraction => maxFuel > 0f ? Fuel / maxFuel : 0f;
     public Vector2 Velocity => body != null ? body.linearVelocity : Vector2.zero;
     public float Speed => Velocity.magnitude;
 
@@ -50,6 +63,8 @@ public sealed class AstronautMovement2D : MonoBehaviour
         body.angularDamping = 0f;
         body.interpolation = RigidbodyInterpolation2D.Interpolate;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
+        Fuel = maxFuel;
 
         lastTravelDirection = initialDriftDirection.sqrMagnitude > 0.000001f
             ? initialDriftDirection.normalized
@@ -79,6 +94,7 @@ public sealed class AstronautMovement2D : MonoBehaviour
         float right = IsKeyHeld(keyboard, rotateRightKey) ? 1f : 0f;
         TurnInput = left - right;
         BoostHeld = IsKeyHeld(keyboard, boostKey);
+        FartBoostHeld = IsKeyHeld(keyboard, fartBoostKey);
     }
 
     private void FixedUpdate()
@@ -96,11 +112,28 @@ public sealed class AstronautMovement2D : MonoBehaviour
             : targetTurnSpeed;
         body.angularVelocity = currentTurnSpeed;
 
-        float targetThrust = BoostHeld ? 1f : 0f;
-        float rampTime = BoostHeld ? thrustRiseTime : thrustFallTime;
+        // W = normal thrust, S = fart boost (overrides). No fuel = no thrust.
+        float thrustTarget = 0f;
+        if (Fuel > 0f)
+        {
+            if (BoostHeld) thrustTarget = 1f;
+            if (FartBoostHeld) thrustTarget = fartBoostMultiplier;
+        }
+        float rampTime = thrustTarget > ThrustAmount ? thrustRiseTime : thrustFallTime;
         ThrustAmount = rampTime > 0f
-            ? Mathf.MoveTowards(ThrustAmount, targetThrust, dt / rampTime)
-            : targetThrust;
+            ? Mathf.MoveTowards(ThrustAmount, thrustTarget, dt / rampTime)
+            : thrustTarget;
+
+        // Burn fuel while firing. Boost is thirsty.
+        if (thrustTarget > 0f)
+        {
+            float burn = fuelBurnRate * (FartBoostHeld ? fartBoostBurnMultiplier : 1f) * dt;
+            Fuel = Mathf.Max(0f, Fuel - burn);
+        }
+
+        if (thrustTarget > 0f)
+            Debug.Log($"[Move] {gameObject.name} thrusting, fuel={Fuel:F1}");
+
 
         Vector2 velocity = body.linearVelocity;
         RememberTravelDirection(velocity);
@@ -121,8 +154,11 @@ public sealed class AstronautMovement2D : MonoBehaviour
 
         Vector2 targetVelocity = velocity
             + forward * (thrustAcceleration * ThrustAmount * dt);
-        if (BoostHeld)
-            targetVelocity = Vector2.ClampMagnitude(targetVelocity, maximumSpeed);
+
+        // Cap the script's own speed (not the tether's) - higher cap while boosting.
+        float speedCap = maximumSpeed * (FartBoostHeld ? fartBoostMultiplier : 1f);
+        if ((BoostHeld || FartBoostHeld) && targetVelocity.magnitude > speedCap)
+            targetVelocity = targetVelocity.normalized * speedCap;
 
         // Impulse = mass * change in velocity. The dt above makes this
         // continuous acceleration, independent of render frame rate.
@@ -132,6 +168,11 @@ public sealed class AstronautMovement2D : MonoBehaviour
             body.AddForce(changeInVelocity * body.mass, ForceMode2D.Impulse);
 
         RememberTravelDirection(targetVelocity);
+    }
+
+    public void AddFuel(float amount)
+    {
+        Fuel = Mathf.Min(maxFuel, Fuel + amount);
     }
 
     // Call after a future respawn teleport. Zero velocity gently resumes idle
@@ -161,6 +202,7 @@ public sealed class AstronautMovement2D : MonoBehaviour
     {
         TurnInput = 0f;
         BoostHeld = false;
+        FartBoostHeld = false;
     }
 
     private void OnDisable()
@@ -187,6 +229,10 @@ public sealed class AstronautMovement2D : MonoBehaviour
     {
         thrustAcceleration = Mathf.Max(0.01f, thrustAcceleration);
         maximumSpeed = Mathf.Max(0.01f, maximumSpeed);
+        fartBoostMultiplier = Mathf.Max(1f, fartBoostMultiplier);
+        maxFuel = Mathf.Max(1f, maxFuel);
+        fuelBurnRate = Mathf.Max(0f, fuelBurnRate);
+        fartBoostBurnMultiplier = Mathf.Max(1f, fartBoostBurnMultiplier);
         turnSpeed = Mathf.Max(0.01f, turnSpeed);
         thrustRiseTime = Mathf.Max(0f, thrustRiseTime);
         thrustFallTime = Mathf.Max(0f, thrustFallTime);
