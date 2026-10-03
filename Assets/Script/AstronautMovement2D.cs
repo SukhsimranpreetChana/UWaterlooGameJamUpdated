@@ -121,7 +121,8 @@ public sealed class AstronautMovement2D : MonoBehaviour
 
         Vector2 targetVelocity = velocity
             + forward * (thrustAcceleration * ThrustAmount * dt);
-        targetVelocity = Vector2.ClampMagnitude(targetVelocity, maximumSpeed);
+        if (BoostHeld)
+            targetVelocity = Vector2.ClampMagnitude(targetVelocity, maximumSpeed);
 
         // Impulse = mass * change in velocity. The dt above makes this
         // continuous acceleration, independent of render frame rate.

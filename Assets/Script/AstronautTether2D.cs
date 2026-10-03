@@ -8,8 +8,12 @@ public sealed class AstronautTether2D : MonoBehaviour
 {
     [Header("Connection")]
     [SerializeField] private Rigidbody2D otherAstronaut;
-    [SerializeField, Min(0.1f)] private float maximumLength = 5f;
+    [SerializeField, Min(0.1f)] private float maximumLength = 10f;
     [SerializeField] private bool astronautsCollide = true;
+
+    [Header("Tension")]
+    [Tooltip("Gentle inward pull, scaled by separation. A whisper up close, firmer when far apart.")]
+    [SerializeField, Min(0f)] private float tensionStiffness = 0.2f;
 
     [Header("Rope appearance")]
     [Tooltip("Assign an unlit material asset. This also keeps its shader in builds.")]
@@ -143,10 +147,25 @@ public sealed class AstronautTether2D : MonoBehaviour
         if (!Mathf.Approximately(joint.distance, maximumLength))
             joint.distance = maximumLength;
         joint.enableCollision = astronautsCollide;
+        ApplyTension();
         rope.enabled = runtimeMaterial != null;
 
         if (runtimeMaterial != null)
             SimulateRope(Time.fixedDeltaTime);
+    }
+
+    // A whisper of inward pull, scaled by separation. Keeps the pair cohesive
+    // without ever fighting the joint's max-distance enforcement.
+    private void ApplyTension()
+    {
+        Vector2 delta = otherAstronaut.position - body.position;
+        float distance = delta.magnitude;
+        if (distance < 0.001f)
+            return;
+
+        Vector2 force = (delta / distance) * (distance * tensionStiffness);
+        body.AddForce(force);
+        otherAstronaut.AddForce(-force);
     }
 
     private void LateUpdate()
@@ -414,6 +433,7 @@ public sealed class AstronautTether2D : MonoBehaviour
     private void ValidateSettings()
     {
         maximumLength = Mathf.Max(0.1f, maximumLength);
+        tensionStiffness = Mathf.Max(0f, tensionStiffness);
         ropeWidth = Mathf.Max(0.001f, ropeWidth);
         ropePoints = Mathf.Clamp(ropePoints, 4, 48);
         motionDamping = Mathf.Max(0f, motionDamping);

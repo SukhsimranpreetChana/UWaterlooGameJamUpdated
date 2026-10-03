@@ -25,6 +25,10 @@ public sealed class TwoPlayerCamera2D : MonoBehaviour
     [SerializeField, Min(0f)] private float padding = 1.2f;
     [SerializeField, Min(0.01f)] private float zoomSmoothTime = 0.4f;
 
+    [Header("Fixed zoom")]
+    [SerializeField] private bool lockZoom = true;
+    [SerializeField, Min(0.1f)] private float fixedSize = 9f;
+
     private Camera view;
     private Vector3 followVelocity;
     private float zoomVelocity;
@@ -66,7 +70,7 @@ public sealed class TwoPlayerCamera2D : MonoBehaviour
         transform.position = Vector3.SmoothDamp(transform.position, target,
             ref followVelocity, followSmoothTime, Mathf.Infinity, dt);
 
-        float targetSize = GetTargetSize(target);
+        float targetSize = lockZoom ? fixedSize : GetTargetSize(target);
         view.orthographicSize = Mathf.SmoothDamp(view.orthographicSize,
             targetSize, ref zoomVelocity, zoomSmoothTime, Mathf.Infinity, dt);
     }
@@ -83,7 +87,7 @@ public sealed class TwoPlayerCamera2D : MonoBehaviour
         Vector3 target = GetTargetPosition();
         view.orthographic = true;
         transform.position = target;
-        view.orthographicSize = GetTargetSize(target);
+        view.orthographicSize = lockZoom ? fixedSize : GetTargetSize(target);
         followVelocity = Vector3.zero;
         zoomVelocity = 0f;
         initialized = true;
@@ -135,6 +139,7 @@ public sealed class TwoPlayerCamera2D : MonoBehaviour
         minimumSize = Mathf.Max(0.1f, minimumSize);
         padding = Mathf.Max(0f, padding);
         upwardLookAhead = Mathf.Max(0f, upwardLookAhead);
+        fixedSize = Mathf.Max(0.1f, fixedSize);
         rightBoundaryX = Mathf.Max(leftBoundaryX + 0.1f, rightBoundaryX);
     }
 }
