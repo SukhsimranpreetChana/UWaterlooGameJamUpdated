@@ -189,7 +189,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: you drifted apart...
+  m_Text: 'you drifted apart...
+
+    click "R" to restart'
 --- !u!222 &101921415
 CanvasRenderer:
   m_ObjectHideFlags: 0
