@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 04f9e248ff54a02a8afb6108bde80490
+guid: f2d982b14aa862b41abf74b5de34525a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3101182326393087285
-    second: rock_5_0
+      213: -2157797500139210143
+    second: 31-315953_2d-spaceship-png-spaceship-sprite-free_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: rock_5_0
+      name: 31-315953_2d-spaceship-png-spaceship-sprite-free_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 912
-        height: 931
+        width: 1383
+        height: 1568
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bcade9bda1366f4d0800000000000000
-      internalID: -3101182326393087285
+      spriteID: 16af9fa2b96fd02e0800000000000000
+      internalID: -2157797500139210143
       vertices: []
       indices: 
       edges: []
@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      31-315953_2d-spaceship-png-spaceship-sprite-free_0: -2157797500139210143
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

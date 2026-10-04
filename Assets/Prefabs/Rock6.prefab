@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6074464613495923830}
   - component: {fileID: 3944731540814851673}
   m_Layer: 0
-  m_Name: Rock2
+  m_Name: Rock6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8476764939301271271, guid: 1626b96f8011a0a44b59d0b811203873, type: 3}
+  m_Sprite: {fileID: 8176547193288410923, guid: 79800341b9289774b940a535bba8c86c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -165,5 +165,5 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.19302702, y: 0.45039368}
-  m_Radius: 4.789486
+  m_Offset: {x: -0.04504347, y: 0}
+  m_Radius: 5.860164

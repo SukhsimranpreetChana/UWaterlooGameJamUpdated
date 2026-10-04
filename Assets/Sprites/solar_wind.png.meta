@@ -159,7 +159,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      solar_wind_0: 3487635548299582588
+      solar_wind_1: -3589051743479658984
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

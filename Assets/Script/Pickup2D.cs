@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Add to an empty GameObject to make a pickup. Set the Type in the Inspector.
-// Builds its own trigger + visual in code. Cyan ring = oxygen, orange = fuel.
+// Uses the prefab's own SpriteRenderer (no procedural override).
 [DisallowMultipleComponent]
 [RequireComponent(typeof(CircleCollider2D))]
 public sealed class Pickup2D : MonoBehaviour
@@ -31,37 +31,6 @@ public sealed class Pickup2D : MonoBehaviour
 
         basePosition = transform.position;
         bobPhase = Random.Range(0f, Mathf.PI * 2f);
-
-        BuildVisual();
-    }
-
-    private void BuildVisual()
-    {
-        // Soft ring texture, generated at runtime.
-        Texture2D tex = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-        for (int y = 0; y < 64; y++)
-        {
-            for (int x = 0; x < 64; x++)
-            {
-                float d = Vector2.Distance(new Vector2(x, y), new Vector2(32f, 32f)) / 32f;
-                float ring = Mathf.Clamp01(1f - Mathf.Abs(d - 0.62f) * 3.2f);
-                float core = Mathf.Clamp01(1f - d * 1.6f);
-                tex.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Max(ring, core * 0.9f)));
-            }
-        }
-        tex.Apply();
-
-        Sprite sprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height),
-            new Vector2(0.5f, 0.5f), 32f);
-
-        var sr = gameObject.AddComponent<SpriteRenderer>();
-        sr.sprite = sprite;
-        sr.sortingOrder = -1;
-        sr.color = type == PickupType.Oxygen
-            ? new Color(0.35f, 0.9f, 1f)
-            : new Color(1f, 0.65f, 0.25f);
-
-        transform.localScale = Vector3.one * 0.5f;
     }
 
     private void Update()

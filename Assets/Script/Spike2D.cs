@@ -37,6 +37,11 @@ public sealed class Spike2D : MonoBehaviour
         Vector2 target = GetPlayersMidpoint();
         Vector2 toTarget = target - (Vector2)transform.position;
         flyDir = toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : Vector2.down;
+
+        // Face the direction of travel
+        float angle = Mathf.Atan2(flyDir.y, flyDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
+
     }
 
     private void FixedUpdate()

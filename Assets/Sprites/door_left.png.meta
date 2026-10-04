@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c24c469f24341b903a65f6c332134513
+guid: 3e28d6e7cb88d074fa3200e16c190ab1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1697783144516427604
-    second: rock_6_0
+      213: -2776686786088596489
+    second: door_left_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: rock_6_0
+      name: door_left_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1205
-        height: 1269
+        width: 2260
+        height: 1516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ca0e37da9334078e0800000000000000
-      internalID: -1697783144516427604
+      spriteID: 7fb0bae541a3779d0800000000000000
+      internalID: -2776686786088596489
       vertices: []
       indices: 
       edges: []

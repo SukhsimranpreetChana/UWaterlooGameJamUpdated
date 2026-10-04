@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 23f16ca20262c2a3cb3bb9dc29c4db0a
+guid: d0450717baf1a88439eec71716efc658
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7564997713910450843
-    second: blackhole_0
+      213: 6259665926663907396
+    second: rock4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: blackhole_0
+      name: rock4_0
       rect:
         serializedVersion: 2
-        x: 22
-        y: 279
-        width: 2923
-        height: 1315
+        x: 0
+        y: 0
+        width: 439
+        height: 415
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 565b9b709aab30790800000000000000
-      internalID: -7564997713910450843
+      spriteID: 4482b63cefcced650800000000000000
+      internalID: 6259665926663907396
       vertices: []
       indices: 
       edges: []
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      blackhole_0: -7564997713910450843
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
